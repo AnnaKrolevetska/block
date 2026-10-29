@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BLOK — Простір для тих, хто йде вперед</title>
+<meta name="description" content="BLOK — київський девелопер житлових комплексів нового покоління. Архітектура, інфраструктура і спільнота в одному дворі.">
+<meta name="theme-color" content="#0A0A0B">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="512x512" href="favicon-512.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;800;900&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0A0A0B;
+    --bg-alt: #131315;
+    --surface: rgba(255,255,255,0.055);
+    --surface-strong: rgba(255,255,255,0.09);
+    --border-glass: rgba(255,255,255,0.14);
+    --text-primary: #F5F4EF;
+    --text-muted: #9A999E;
+    --lime: #D6FF3F;
+    --orange: #FF5B2E;
+    --radius-lg: 20px;
+    --radius-md: 12px;
+    --font-display: 'Archivo', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --font-mono: 'IBM Plex Mono', monospace;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--text-primary);
+    font-family:var(--font-body);
+    line-height:1.5;
+    overflow-x:hidden;
+  }
+  img{display:block;width:100%;height:100%;object-fit:cover;}
+  a{color:inherit;text-decoration:none;}
+  button{font-family:inherit;cursor:pointer;border:none;}
+  .wrap{max-width:1360px;margin:0 auto;padding:0 40px;}
+  .eyebrow{
+    font-family:var(--font-mono);
+    font-size:12px;
+    letter-spacing:0.06em;
+    color:var(--lime);
+    text-transform:uppercase;
+    display:flex;align-items:center;gap:10px;
+  }
+  .eyebrow::before{content:'';width:6px;height:6px;background:var(--lime);border-radius:50%;flex-shrink:0;}
+  .glass{
+    background:var(--surface);
+    border:1px solid var(--border-glass);
+    backdrop-filter:blur(18px) saturate(140%);
+    -webkit-backdrop-filter:blur(18px) saturate(140%);
+  }
+  .btn{
+    font-family:var(--font-body);
+    font-weight:600;
+    font-size:15px;
+    padding:15px 28px;
+    border-radius:100px;
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+    transition:transform .25s ease, background .25s ease;
+    white-space:nowrap;
+  }
+  .btn:hover{transform:translateY(-2px);}
+  .btn-lime{background:var(--lime);color:#0A0A0B;}
+  .btn-lime:hover{background:#c2ee28;}
+  .btn-glass{color:var(--text-primary);}
+  .btn-glass:hover{background:var(--surface-strong);}
+  section{position:relative;}
+  .reveal{opacity:0;transform:translateY(28px);transition:opacity .8s ease, transform .8s ease;}
+  .reveal.in{opacity:1;transform:translateY(0);}
+
+  /* NAV */
+  .nav{
+    position:fixed;top:20px;left:50%;transform:translateX(-50%);
+    width:calc(100% - 48px);max-width:1240px;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:14px 22px;border-radius:100px;z-index:100;
+  }
+  .logo{font-family:var(--font-display);font-weight:900;font-size:22px;letter-spacing:-0.02em;}
+  .nav-links{display:flex;gap:34px;font-size:14px;font-weight:500;}
+  .nav-links a{color:var(--text-muted);transition:color .2s;}
+  .nav-links a:hover{color:var(--text-primary);}
+  .nav-cta{display:none;}
+
+  /* HERO */
+  .hero{
+    height:100vh;min-height:760px;
+    display:flex;flex-direction:column;justify-content:flex-end;
+    position:relative;
+  }
+  .hero-bg{position:absolute;inset:0;z-index:0;}
+  .hero-bg img{filter:brightness(0.55) saturate(1.05);}
+  .hero-bg::after{
+    content:'';position:absolute;inset:0;
+    background:linear-gradient(180deg, rgba(10,10,11,0.15) 0%, rgba(10,10,11,0.15) 45%, rgba(10,10,11,0.95) 100%);
+  }
+  .hero-top{position:relative;z-index:2;padding:120px 40px 0;}
+  .hero-title{
+    position:relative;z-index:2;
+    font-family:var(--font-display);
+    font-weight:900;
+    font-size:clamp(52px, 9vw, 132px);
+    line-height:0.92;
+    letter-spacing:-0.03em;
+    text-transform:uppercase;
+    padding:0 0 0 40px;
+    max-width:1300px;
+  }
+  .hero-title span{color:var(--lime);}
+  .hero-bottom{
+    position:relative;z-index:2;
+    display:flex;justify-content:space-between;align-items:flex-end;
+    gap:24px;flex-wrap:wrap;
+    padding:36px 40px 56px;
+  }
+  .hero-sub{font-size:17px;color:var(--text-muted);max-width:380px;}
+  .hero-actions{display:flex;gap:14px;flex-wrap:wrap;}
+  .hero-top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;}
+  .client-cluster{
+    display:flex;align-items:center;gap:14px;
+    padding:8px 20px 8px 8px;border-radius:100px;
+  }
+  .client-cluster .avatars{display:flex;}
+  .client-cluster .avatars img{
+    width:36px;height:36px;border-radius:50%;
+    border:2px solid var(--bg);margin-left:-10px;object-fit:cover;
+  }
+  .client-cluster .avatars img:first-child{margin-left:0;}
+  .cluster-text .num{font-family:var(--font-display);font-weight:800;font-size:15px;white-space:nowrap;}
+  .cluster-text .num span{font-weight:500;color:var(--text-muted);font-size:13px;margin-left:4px;}
+  .cluster-text .rating{font-size:12px;color:var(--text-muted);margin-top:2px;white-space:nowrap;}
+
+  /* MARQUEE */
+  .marquee{
+    background:var(--bg-alt);
+    padding:22px 0;
+    overflow:hidden;
+    border-top:1px solid rgba(255,255,255,0.08);
+    border-bottom:1px solid rgba(255,255,255,0.08);
+  }
+  .marquee-track{
+    display:flex;gap:48px;white-space:nowrap;
+    animation:scroll-marquee 28s linear infinite;
+    width:max-content;
+  }
+  .marquee:hover .marquee-track{animation-play-state:paused;}
+  .marquee-track span{
+    font-family:var(--font-display);font-weight:800;font-size:22px;
+    text-transform:uppercase;letter-spacing:0.01em;
+    color:var(--text-muted);display:flex;align-items:center;gap:48px;
+  }
+  .marquee-track span em{color:var(--lime);font-style:normal;}
+  @keyframes scroll-marquee{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+
+  /* MANIFESTO */
+  .manifesto{padding:150px 0;}
+  .manifesto-grid{display:grid;grid-template-columns:1.05fr 0.95fr;gap:64px;align-items:center;}
+  .manifesto h2{
+    font-family:var(--font-display);font-weight:800;
+    font-size:clamp(30px,3.6vw,46px);line-height:1.15;letter-spacing:-0.01em;
+    margin:18px 0 26px;
+  }
+  .manifesto p{color:var(--text-muted);font-size:17px;max-width:480px;margin-bottom:28px;}
+  .manifesto-media{position:relative;border-radius:var(--radius-lg);overflow:hidden;aspect-ratio:4/5;}
+  .manifesto-media img{filter:saturate(1.05);}
+  .media-tag{
+    position:absolute;left:20px;bottom:20px;right:20px;
+    padding:16px 18px;border-radius:var(--radius-md);
+  }
+  .media-tag .eyebrow{margin-bottom:6px;}
+  .media-tag .title{font-family:var(--font-display);font-weight:800;font-size:20px;}
+
+  /* PROJECTS */
+  .projects{padding:0 0 140px;}
+  .section-head{
+    display:flex;justify-content:space-between;align-items:flex-end;
+    margin-bottom:48px;gap:24px;flex-wrap:wrap;
+  }
+  .section-head h2{
+    font-family:var(--font-display);font-weight:800;
+    font-size:clamp(30px,3.6vw,46px);letter-spacing:-0.01em;
+  }
+  .section-head p{color:var(--text-muted);max-width:340px;font-size:15px;}
+  .project-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+  .project-card{
+    position:relative;border-radius:var(--radius-lg);overflow:hidden;
+    aspect-ratio:3/4;
+  }
+  .project-card img{transition:transform .6s ease;filter:saturate(1.05) brightness(0.92);}
+  .project-card:hover img{transform:scale(1.05);}
+  .project-card::after{
+    content:'';position:absolute;inset:0;
+    background:linear-gradient(180deg, rgba(10,10,11,0) 35%, rgba(10,10,11,0.92) 100%);
+  }
+  .project-top{position:absolute;top:22px;left:22px;right:22px;z-index:2;display:flex;justify-content:space-between;align-items:flex-start;}
+  .project-status{padding:8px 14px;border-radius:100px;font-family:var(--font-mono);font-size:11px;letter-spacing:0.04em;text-transform:uppercase;}
+  .project-bottom{position:absolute;left:22px;right:22px;bottom:22px;z-index:2;}
+  .project-name{font-family:var(--font-display);font-weight:900;font-size:clamp(28px,3vw,40px);text-transform:uppercase;letter-spacing:-0.02em;margin:8px 0 10px;}
+  .project-desc{font-size:14px;color:var(--text-muted);max-width:320px;margin-bottom:16px;}
+  .project-link{font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:6px;color:var(--lime);}
+
+  /* LIFESTYLE */
+  .lifestyle{padding:140px 0;}
+  .lifestyle-grid{display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:220px 220px;gap:18px;}
+  .life-card{position:relative;border-radius:var(--radius-md);overflow:hidden;}
+  .life-card:nth-child(1){grid-column:span 2;grid-row:span 2;}
+  .life-card:nth-child(2){grid-column:span 2;}
+  .life-card:nth-child(3){grid-column:span 1;}
+  .life-card:nth-child(4){grid-column:span 1;}
+  .life-card img{filter:brightness(0.75) saturate(1.05);}
+  .life-tag{position:absolute;left:16px;bottom:16px;right:16px;padding:12px 14px;border-radius:10px;}
+  .life-tag .title{font-family:var(--font-display);font-weight:700;font-size:15px;}
+
+  /* TESTIMONIALS */
+  .testimonials{padding:0 0 140px;}
+  .test-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+  .test-card{border-radius:var(--radius-lg);overflow:hidden;}
+  .test-media{aspect-ratio:16/10;}
+  .test-media img{filter:saturate(1.05) brightness(0.92);}
+  .test-body{padding:24px;}
+  .test-quote{font-size:15px;line-height:1.6;margin-bottom:20px;}
+  .test-person{display:flex;align-items:center;gap:12px;}
+  .test-person img{width:38px;height:38px;border-radius:50%;object-fit:cover;}
+  .test-person .name{font-weight:600;font-size:14px;}
+  .test-person .role{font-size:12px;color:var(--text-muted);}
+
+  /* CTA */
+  .cta{position:relative;padding:160px 0;text-align:center;overflow:hidden;}
+  .cta-bg{position:absolute;inset:0;z-index:0;}
+  .cta-bg img{filter:brightness(0.35) saturate(1.1);}
+  .cta-inner{position:relative;z-index:1;max-width:760px;margin:0 auto;}
+  .cta h2{font-family:var(--font-display);font-weight:900;font-size:clamp(34px,5vw,64px);letter-spacing:-0.02em;line-height:1.05;margin:18px 0 32px;text-transform:uppercase;}
+  .cta-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;}
+
+  /* FOOTER */
+  footer{padding:70px 0 30px;}
+  .footer-top{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:40px;padding-bottom:60px;border-bottom:1px solid rgba(255,255,255,0.1);}
+  .footer-brand .logo{margin-bottom:14px;}
+  .footer-brand p{color:var(--text-muted);font-size:14px;max-width:260px;}
+  .footer-col h4{font-size:13px;color:var(--text-muted);margin-bottom:16px;text-transform:uppercase;letter-spacing:0.04em;}
+  .footer-col a{display:block;font-size:14px;margin-bottom:12px;color:var(--text-primary);}
+  .footer-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:26px;font-size:13px;color:var(--text-muted);flex-wrap:wrap;gap:12px;}
+  .footer-socials{display:flex;gap:18px;}
+
+  /* TABLET */
+  @media (max-width: 1024px){
+    .wrap{padding:0 28px;}
+    .nav{width:calc(100% - 32px);padding:12px 16px;}
+    .nav-links{gap:22px;font-size:13px;}
+    .hero-top{padding:100px 28px 0;}
+    .hero-title{padding-left:0;font-size:clamp(44px,8vw,88px);}
+    .hero-bottom{padding:28px 28px 44px;}
+    .manifesto{padding:100px 0;}
+    .manifesto-grid{grid-template-columns:1fr;gap:44px;}
+    .manifesto-media{aspect-ratio:16/9;}
+    .project-grid{grid-template-columns:repeat(2,1fr);}
+    .lifestyle{padding:100px 0;}
+    .lifestyle-grid{grid-template-columns:repeat(2,1fr);grid-template-rows:200px 200px;}
+    .life-card:nth-child(1){grid-column:span 2;grid-row:span 1;}
+    .life-card:nth-child(2){grid-column:span 2;grid-row:span 1;}
+    .test-grid{grid-template-columns:repeat(2,1fr);}
+    .cta{padding:110px 0;}
+    .footer-top{grid-template-columns:1fr 1fr;row-gap:36px;}
+  }
+
+  /* MOBILE */
+  @media (max-width: 640px){
+    .wrap{padding:0 20px;}
+    .nav{top:12px;width:calc(100% - 24px);padding:10px 14px;}
+    .logo{font-size:19px;}
+    .nav-links{display:none;}
+    .hero{min-height:640px;}
+    .hero-top{padding:96px 20px 0;flex-direction:column;align-items:flex-start;gap:14px;}
+    .client-cluster{padding:6px 16px 6px 6px;}
+    .client-cluster .avatars img{width:30px;height:30px;}
+    .cluster-text .num{font-size:13px;}
+    .cluster-text .rating{font-size:11px;}
+    .hero-title{font-size:clamp(36px,11vw,56px);line-height:0.98;}
+    .hero-bottom{flex-direction:column;align-items:stretch;padding:24px 20px 40px;gap:20px;}
+    .hero-sub{max-width:none;font-size:15px;}
+    .hero-actions{width:100%;}
+    .hero-actions .btn{flex:1;justify-content:center;}
+    .marquee-track span{font-size:16px;gap:28px;}
+    .marquee-track{gap:28px;}
+    .manifesto{padding:70px 0;}
+    .manifesto h2{font-size:clamp(26px,7vw,34px);}
+    .manifesto p{max-width:none;}
+    .project-grid{grid-template-columns:1fr;}
+    .project-card{aspect-ratio:4/5;}
+    .section-head{flex-direction:column;align-items:flex-start;gap:10px;margin-bottom:32px;}
+    .lifestyle{padding:70px 0;}
+    .lifestyle-grid{grid-template-columns:1fr;grid-template-rows:none;gap:14px;}
+    .life-card{aspect-ratio:4/3;grid-column:span 1 !important;grid-row:span 1 !important;}
+    .testimonials{padding:0 0 70px;}
+    .test-grid{grid-template-columns:1fr;}
+    .cta{padding:80px 0;}
+    .cta h2{font-size:clamp(28px,8vw,40px);}
+    .cta-actions{flex-direction:column;}
+    .cta-actions .btn{width:100%;justify-content:center;}
+    footer{padding:50px 0 24px;}
+    .footer-top{grid-template-columns:1fr;row-gap:30px;padding-bottom:36px;}
+    .footer-bottom{flex-direction:column;align-items:flex-start;}
+  }
+
+
+  /* BOOKING MODAL */
+  body.modal-open{overflow:hidden;}
+  .modal{
+    position:fixed;inset:0;z-index:200;
+    display:flex;align-items:center;justify-content:center;padding:24px;
+    visibility:hidden;opacity:0;transition:opacity .35s ease, visibility 0s linear .35s;
+  }
+  .modal.open{visibility:visible;opacity:1;transition:opacity .35s ease;}
+  .modal-backdrop{position:absolute;inset:0;background:rgba(10,10,11,0.72);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);}
+  .modal-panel{
+    position:relative;width:100%;max-width:520px;max-height:calc(100vh - 48px);overflow-y:auto;
+    background:rgba(19,19,21,0.92);border:1px solid var(--border-glass);border-radius:28px;
+    padding:36px 34px 30px;
+    box-shadow:0 40px 120px rgba(0,0,0,0.6);
+    transform:translateY(24px) scale(.98);transition:transform .45s cubic-bezier(.2,.8,.2,1);
+  }
+  .modal.open .modal-panel{transform:none;}
+  .modal-panel::before{
+    content:'';position:absolute;top:-120px;right:-80px;width:260px;height:260px;border-radius:50%;
+    background:radial-gradient(circle, rgba(214,255,63,0.18), transparent 70%);pointer-events:none;
+  }
+  .modal-close{
+    position:absolute;top:18px;right:18px;width:40px;height:40px;border-radius:50%;
+    background:var(--surface);border:1px solid var(--border-glass);color:var(--text-primary);
+    font-size:18px;line-height:1;display:flex;align-items:center;justify-content:center;transition:background .2s, transform .2s;
+  }
+  .modal-close:hover{background:var(--surface-strong);transform:rotate(90deg);}
+  .modal h3{
+    font-family:var(--font-display);font-weight:900;font-size:clamp(26px,4vw,34px);
+    text-transform:uppercase;letter-spacing:-0.02em;line-height:1.02;margin:14px 0 10px;padding-right:40px;
+  }
+  .modal h3 span{color:var(--lime);}
+  .modal-lead{color:var(--text-muted);font-size:15px;margin-bottom:26px;}
+  .field{margin-bottom:16px;}
+  .field label,.field-label{
+    display:block;font-family:var(--font-mono);font-size:11px;letter-spacing:0.06em;text-transform:uppercase;
+    color:var(--text-muted);margin-bottom:8px;
+  }
+  .field input,.field select{
+    width:100%;font-family:var(--font-body);font-size:15px;color:var(--text-primary);
+    background:var(--surface);border:1px solid var(--border-glass);border-radius:14px;
+    padding:14px 16px;outline:none;transition:border-color .2s, background .2s;appearance:none;-webkit-appearance:none;
+  }
+  .field select{
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239A999E' stroke-width='1.6' fill='none'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:right 16px center;padding-right:40px;
+  }
+  .field select option{background:#131315;color:var(--text-primary);}
+  .field input::placeholder{color:#6c6b70;}
+  .field input:focus,.field select:focus{border-color:var(--lime);background:var(--surface-strong);}
+  .field.invalid input{border-color:var(--orange);}
+  .field-error{display:none;font-size:12px;color:var(--orange);margin-top:6px;}
+  .field.invalid .field-error{display:block;}
+  .field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;}
+  .chip input{position:absolute;opacity:0;pointer-events:none;}
+  .chip span{
+    display:inline-block;padding:10px 16px;border-radius:100px;font-size:13px;font-weight:500;
+    background:var(--surface);border:1px solid var(--border-glass);color:var(--text-muted);cursor:pointer;transition:all .2s;
+  }
+  .chip input:checked + span{background:var(--lime);border-color:var(--lime);color:#0A0A0B;}
+  .chip input:focus-visible + span{outline:2px solid var(--lime);outline-offset:2px;}
+  .modal-submit{width:100%;justify-content:center;margin-top:10px;font-size:16px;padding:17px 28px;}
+  .modal-note{font-size:12px;color:var(--text-muted);text-align:center;margin-top:14px;}
+  .modal-success{display:none;text-align:center;padding:20px 0 6px;}
+  .modal.done .booking-form,.modal.done .modal-lead,.modal.done .modal-head{display:none;}
+  .modal.done .modal-success{display:block;}
+  .success-icon{
+    width:72px;height:72px;border-radius:50%;background:var(--lime);color:#0A0A0B;margin:0 auto 22px;
+    display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:900;
+  }
+  .modal-success h3{padding-right:0;}
+  .modal-success p{color:var(--text-muted);font-size:15px;max-width:340px;margin:0 auto 26px;}
+
+  @media (max-width: 640px){
+    .modal{padding:0;align-items:flex-end;}
+    .modal-panel{max-width:none;border-radius:26px 26px 0 0;padding:30px 20px 24px;max-height:92vh;transform:translateY(100%);}
+    .field-row{grid-template-columns:1fr;gap:0;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .modal,.modal-panel{transition:none;}
+    .marquee-track{animation:none;}
+    .reveal{opacity:1;transform:none;transition:none;}
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav glass">
+  <div class="logo">BLOK</div>
+  <div class="nav-links">
+    <a href="#projects">Проєкти</a>
+    <a href="#manifesto">Про нас</a>
+    <a href="#contact">Інвесторам</a>
+    <a href="#contact">Контакти</a>
+  </div>
+  <a href="#booking" class="btn btn-lime" data-open-booking style="padding:11px 22px;font-size:13px;">Записатись</a>
+</nav>
+
+<section class="hero">
+  <div class="hero-bg">
+    <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1800&q=80" alt="Сучасна архітектура BLOK на заході сонця">
+  </div>
+  <div class="hero-top">
+    <div class="eyebrow">50.4501° N, 30.5234° E — KYIV, UA</div>
+    <div class="client-cluster glass">
+      <div class="avatars" aria-hidden="true">
+        <img src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?auto=format&fit=crop&w=80&q=80" alt="">
+        <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=80&q=80" alt="">
+        <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=80&q=80" alt="">
+        <img src="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=80&q=80" alt="">
+      </div>
+      <div class="cluster-text">
+        <div class="num">1200+ <span>родин у BLOK</span></div>
+        <div class="rating">★ 4.9 середня оцінка мешканців</div>
+      </div>
+    </div>
+  </div>
+  <h1 class="hero-title">Простір для<br>тих, хто <span>йде вперед</span></h1>
+  <div class="hero-bottom">
+    <p class="hero-sub">Ми будуємо житлові комплекси для людей, які не чекають на «колись». Архітектура, інфраструктура і спільнота в одному дворі.</p>
+    <div class="hero-actions">
+      <a href="#projects" class="btn btn-lime">Дивитись проєкти →</a>
+      <a href="#booking" class="btn btn-glass glass" data-open-booking>Записатись на перегляд</a>
+    </div>
+  </div>
+</section>
+
+<div class="marquee">
+  <div class="marquee-track">
+    <span><em>Архітектура</em> — Інфраструктура — Спільнота — Прозорість — <em>Архітектура</em> — Інфраструктура — Спільнота — Прозорість —</span>
+    <span><em>Архітектура</em> — Інфраструктура — Спільнота — Прозорість — <em>Архітектура</em> — Інфраструктура — Спільнота — Прозорість —</span>
+  </div>
+</div>
+
+<section class="manifesto reveal" id="manifesto">
+  <div class="wrap manifesto-grid">
+    <div>
+      <div class="eyebrow">Про BLOK</div>
+      <h2>Місто змінюється. Ми його будуємо.</h2>
+      <p>Десять років «елітна нерухомість» означала мармур і колони. BLOK з'явився з роздратування — набридло бачити, як хороші локації забудовують за шаблонами.</p>
+      <p>Ми зібрали архітекторів і урбаністів, щоб будувати простір, у якому хочеться жити на повну — без декору заради декору.</p>
+      <a href="#projects" class="btn btn-glass glass">Обрати свій BLOK →</a>
+    </div>
+    <div class="manifesto-media">
+      <img src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80" alt="Архітектурна деталь житлового комплексу">
+      <div class="media-tag glass">
+        <div class="eyebrow">Дизайн понад декор</div>
+        <div class="title">Архітектура як заява</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="projects reveal" id="projects">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Обери свій BLOK</h2>
+      <p>Шість проєктів, шість характерів. Один стандарт якості.</p>
+    </div>
+    <div class="project-grid">
+      <div class="project-card">
+        <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1000&q=80" alt="BLOK.RIVER — житловий комплекс на набережній">
+        <div class="project-top">
+          <div class="eyebrow" style="color:var(--text-primary);">50.459° N, 30.514° E</div>
+          <div class="project-status glass">Здача 2027</div>
+        </div>
+        <div class="project-bottom">
+          <div class="eyebrow">Поділ, набережна Дніпра</div>
+          <div class="project-name">BLOK.RIVER</div>
+          <p class="project-desc">Перша черга на набережній Подолу. Панорамні вікна, тераси на південь.</p>
+          <a href="#booking" class="project-link" data-open-booking data-project="BLOK.RIVER">Записатись на перегляд →</a>
+        </div>
+      </div>
+      <div class="project-card">
+        <img src="https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=1000&q=80" alt="BLOK.PARK — житловий комплекс біля парку">
+        <div class="project-top">
+          <div class="eyebrow" style="color:var(--text-primary);">50.437° N, 30.492° E</div>
+          <div class="project-status glass">У продажу</div>
+        </div>
+        <div class="project-bottom">
+          <div class="eyebrow">Голосіїв, парк Партизанської Слави</div>
+          <div class="project-name">BLOK.PARK</div>
+          <p class="project-desc">Двір, що переходить у ліс. Тихий район з видом на зелень.</p>
+          <a href="#booking" class="project-link" data-open-booking data-project="BLOK.PARK">Записатись на перегляд →</a>
+        </div>
+      </div>
+      <div class="project-card">
+        <img src="https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=1000&q=80" alt="BLOK.HILL — житловий комплекс на пагорбі">
+        <div class="project-top">
+          <div class="eyebrow" style="color:var(--text-primary);">50.401° N, 30.567° E</div>
+          <div class="project-status glass">Здача 2028</div>
+        </div>
+        <div class="project-bottom">
+          <div class="eyebrow">Печерськ, схил над Дніпром</div>
+          <div class="project-name">BLOK.HILL</div>
+          <p class="project-desc">Тераси сходами вниз до річки. Приватні входи на кожному рівні.</p>
+          <a href="#booking" class="project-link" data-open-booking data-project="BLOK.HILL">Записатись на перегляд →</a>
+        </div>
+      </div>
+      <div class="project-card">
+        <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=1000&q=80" alt="BLOK.LOFT — лофт-квартали">
+        <div class="project-top">
+          <div class="eyebrow" style="color:var(--text-primary);">50.454° N, 30.523° E</div>
+          <div class="project-status glass">Здано</div>
+        </div>
+        <div class="project-bottom">
+          <div class="eyebrow">Шевченківський, колишня промзона</div>
+          <div class="project-name">BLOK.LOFT</div>
+          <p class="project-desc">Індустріальні фасади, високі стелі. Для тих, хто цінує простір.</p>
+          <a href="#booking" class="project-link" data-open-booking data-project="BLOK.LOFT">Записатись на перегляд →</a>
+        </div>
+      </div>
+      <div class="project-card">
+        <img src="https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=1000&q=80" alt="BLOK.YARD — квартал з внутрішнім двором">
+        <div class="project-top">
+          <div class="eyebrow" style="color:var(--text-primary);">50.445° N, 30.489° E</div>
+          <div class="project-status glass">У продажу</div>
+        </div>
+        <div class="project-bottom">
+          <div class="eyebrow">Солом'янський, тихий квартал</div>
+          <div class="project-name">BLOK.YARD</div>
+          <p class="project-desc">Закритий двір без машин. Простір, де діти грають на вулиці.</p>
+          <a href="#booking" class="project-link" data-open-booking data-project="BLOK.YARD">Записатись на перегляд →</a>
+        </div>
+      </div>
+      <div class="project-card">
+        <img src="https://images.unsplash.com/photo-1487958449943-2429e8be8625?auto=format&fit=crop&w=1000&q=80" alt="BLOK.SKY — висотний житловий комплекс">
+        <div class="project-top">
+          <div class="eyebrow" style="color:var(--text-primary);">50.472° N, 30.511° E</div>
+          <div class="project-status glass">Здача 2027</div>
+        </div>
+        <div class="project-bottom">
+          <div class="eyebrow">Оболонь, набережна</div>
+          <div class="project-name">BLOK.SKY</div>
+          <p class="project-desc">Найвища точка серед проєктів BLOK. Панорама на все місто.</p>
+          <a href="#booking" class="project-link" data-open-booking data-project="BLOK.SKY">Записатись на перегляд →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="lifestyle reveal">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Двір — це теж квартира</h2>
+      <p>Ми проєктуємо простір навколо будинку так само ретельно, як і саму квартиру.</p>
+    </div>
+    <div class="lifestyle-grid">
+      <div class="life-card">
+        <img src="https://images.unsplash.com/photo-1571055107559-3e67626fa8be?auto=format&fit=crop&w=900&q=80" alt="Рутоп-тераса з басейном">
+        <div class="life-tag glass"><div class="title">Рутоп-тераса з видом на місто</div></div>
+      </div>
+      <div class="life-card">
+        <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=900&q=80" alt="Коворкінг простір">
+        <div class="life-tag glass"><div class="title">Коворкінг на першому поверсі</div></div>
+      </div>
+      <div class="life-card">
+        <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=600&q=80" alt="Фітнес-простір">
+        <div class="life-tag glass"><div class="title">Фітнес-простір</div></div>
+      </div>
+      <div class="life-card">
+        <img src="https://images.unsplash.com/photo-1600585152915-d208bec867a1?auto=format&fit=crop&w=600&q=80" alt="Закритий двір">
+        <div class="life-tag glass"><div class="title">Двір закритого типу</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="testimonials reveal">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Що кажуть мешканці</h2>
+    </div>
+    <div class="test-grid">
+      <div class="test-card glass">
+        <div class="test-media"><img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=700&q=80" alt="Вітальня в квартирі BLOK.RIVER"></div>
+        <div class="test-body">
+          <p class="test-quote">Переїхав із орендованої квартири у свою — і вперше відчув, що це «мій район».</p>
+          <div class="test-person">
+            <img src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?auto=format&fit=crop&w=100&q=80" alt="Портрет мешканця Олексія">
+            <div>
+              <div class="name">Олексій</div>
+              <div class="role">BLOK.RIVER, Засновник стартапу</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="test-card glass">
+        <div class="test-media"><img src="https://images.unsplash.com/photo-1571055107559-3e67626fa8be?auto=format&fit=crop&w=700&q=80" alt="Рутоп-тераса BLOK.SKY"></div>
+        <div class="test-body">
+          <p class="test-quote">Рутоп став продовженням нашої вітальні. Влітку працюємо звідти майже щодня.</p>
+          <div class="test-person">
+            <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=100&q=80" alt="Портрет мешканки Марини">
+            <div>
+              <div class="name">Марина</div>
+              <div class="role">BLOK.SKY, Дизайнерка</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="test-card glass">
+        <div class="test-media"><img src="https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=700&q=80" alt="Двір BLOK.PARK"></div>
+        <div class="test-body">
+          <p class="test-quote">Купував як інвестицію, залишився жити сам — така атмосфера у дворі.</p>
+          <div class="test-person">
+            <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=100&q=80" alt="Портрет мешканця Дмитра">
+            <div>
+              <div class="name">Дмитро</div>
+              <div class="role">BLOK.PARK, Інвестор</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="test-card glass">
+        <div class="test-media"><img src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=700&q=80" alt="Кухня-вітальня BLOK.LOFT"></div>
+        <div class="test-body">
+          <p class="test-quote">Стелі 3.6 метра змінюють все. Навіть невелика квартира не здається тісною.</p>
+          <div class="test-person">
+            <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=100&q=80" alt="Портрет мешканця Артема">
+            <div>
+              <div class="name">Артем</div>
+              <div class="role">BLOK.LOFT, Фотограф</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="test-card glass">
+        <div class="test-media"><img src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=700&q=80" alt="Коворкінг у BLOK.YARD"></div>
+        <div class="test-body">
+          <p class="test-quote">Працюю з коворкінгу на першому поверсі — навіть в офіс їздити не треба.</p>
+          <div class="test-person">
+            <img src="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=100&q=80" alt="Портрет мешканки Софії">
+            <div>
+              <div class="name">Софія</div>
+              <div class="role">BLOK.YARD, Продакт-менеджерка</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="test-card glass">
+        <div class="test-media"><img src="https://images.unsplash.com/photo-1600585152220-90363fe7e115?auto=format&fit=crop&w=700&q=80" alt="Кухня BLOK.HILL"></div>
+        <div class="test-body">
+          <p class="test-quote">Три поверхи терас — і на кожному своя атмосфера. Досі не набридло.</p>
+          <div class="test-person">
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80" alt="Портрет мешканки Ірини">
+            <div>
+              <div class="name">Ірина</div>
+              <div class="role">BLOK.HILL, Архітекторка</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta reveal" id="contact">
+  <div class="cta-bg">
+    <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1800&q=80" alt="Нічний вигляд на житловий комплекс">
+  </div>
+  <div class="wrap cta-inner">
+    <div class="eyebrow" style="justify-content:center;">Готовий побачити своїми очима?</div>
+    <h2>Запишись на приватний перегляд</h2>
+    <div class="cta-actions">
+      <a href="#booking" class="btn btn-lime" data-open-booking>Записатись зараз</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="logo">BLOK</div>
+        <p>Простір для тих, хто йде вперед. Київський девелопер житлових комплексів нового покоління.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Навігація</h4>
+        <a href="#projects">Проєкти</a>
+        <a href="#manifesto">Про нас</a>
+        <a href="#contact">Інвесторам</a>
+        <a href="#contact">Контакти</a>
+      </div>
+      <div class="footer-col">
+        <h4>Проєкти</h4>
+        <a href="#projects">BLOK.RIVER</a>
+        <a href="#projects">BLOK.PARK</a>
+        <a href="#projects">BLOK.HILL</a>
+        <a href="#projects">BLOK.LOFT</a>
+        <a href="#projects">BLOK.YARD</a>
+        <a href="#projects">BLOK.SKY</a>
+      </div>
+      <div class="footer-col">
+        <h4>Контакти</h4>
+        <a href="tel:+380000000000">+380 00 000 00 00</a>
+        <a href="mailto:hello@blok.ua">hello@blok.ua</a>
+        <a href="#">Офіс продажів, Київ</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div>© BLOK, 2026. Усі права захищено.</div>
+      <div class="footer-socials">
+        <a href="#">Instagram</a>
+        <a href="#">Telegram</a>
+        <a href="#">Facebook</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<div class="modal" id="booking" role="dialog" aria-modal="true" aria-labelledby="booking-title" aria-hidden="true">
+  <div class="modal-backdrop" data-close-booking></div>
+  <div class="modal-panel">
+    <button class="modal-close" type="button" aria-label="Закрити" data-close-booking>✕</button>
+    <div class="modal-head">
+      <div class="eyebrow">Приватний перегляд</div>
+      <h3 id="booking-title">Запишись <span>на перегляд</span></h3>
+    </div>
+    <p class="modal-lead">Залиште контакти — менеджер зателефонує протягом 15 хвилин і підбере зручний час.</p>
+    <form class="booking-form" novalidate>
+      <div class="field">
+        <label for="b-name">Ім'я</label>
+        <input id="b-name" name="name" type="text" placeholder="Як до вас звертатись" autocomplete="name" required>
+        <div class="field-error">Вкажіть ваше ім'я</div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="b-phone">Телефон</label>
+          <input id="b-phone" name="phone" type="tel" placeholder="+380 __ ___ __ __" autocomplete="tel" inputmode="tel" required>
+          <div class="field-error">Вкажіть коректний номер</div>
+        </div>
+        <div class="field">
+          <label for="b-project">Проєкт</label>
+          <select id="b-project" name="project">
+            <option value="">Ще не обрав</option>
+            <option>BLOK.RIVER</option>
+            <option>BLOK.PARK</option>
+            <option>BLOK.HILL</option>
+            <option>BLOK.LOFT</option>
+            <option>BLOK.YARD</option>
+            <option>BLOK.SKY</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <span class="field-label">Коли зручно</span>
+        <div class="chips">
+          <label class="chip"><input type="radio" name="time" value="Будні" checked><span>Будні</span></label>
+          <label class="chip"><input type="radio" name="time" value="Вихідні"><span>Вихідні</span></label>
+          <label class="chip"><input type="radio" name="time" value="Онлайн-тур"><span>Онлайн-тур</span></label>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-lime modal-submit">Записатись →</button>
+      <p class="modal-note">Натискаючи кнопку, ви погоджуєтесь на обробку персональних даних.</p>
+    </form>
+    <div class="modal-success" aria-live="polite">
+      <div class="success-icon">✓</div>
+      <h3>Дякуємо, <span>до зустрічі</span></h3>
+      <p>Заявку прийнято. Менеджер BLOK зв'яжеться з вами найближчим часом.</p>
+      <button type="button" class="btn btn-glass glass" data-close-booking>Повернутись на сайт</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const revealEls = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  revealEls.forEach(el => observer.observe(el));
+
+  // Booking modal
+  const modal = document.getElementById('booking');
+  const form = modal.querySelector('.booking-form');
+  let lastFocus = null;
+
+  function openBooking(e){
+    if (e) e.preventDefault();
+    lastFocus = document.activeElement;
+    modal.classList.remove('done');
+    const proj = e && e.currentTarget && e.currentTarget.dataset.project;
+    form.elements.project.value = proj || '';
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden','false');
+    document.body.classList.add('modal-open');
+    setTimeout(() => modal.querySelector('#b-name').focus(), 150);
+  }
+  function closeBooking(){
+    modal.classList.remove('open');
+    modal.setAttribute('aria-hidden','true');
+    document.body.classList.remove('modal-open');
+    if (lastFocus) lastFocus.focus();
+  }
+  document.querySelectorAll('[data-open-booking]').forEach(b => b.addEventListener('click', openBooking));
+  modal.querySelectorAll('[data-close-booking]').forEach(b => b.addEventListener('click', closeBooking));
+  document.addEventListener('keydown', e => {
+    if (!modal.classList.contains('open')) return;
+    if (e.key === 'Escape') closeBooking();
+    if (e.key === 'Tab'){
+      const f = [...modal.querySelectorAll('button, input, select, a[href]')].filter(el => el.offsetParent !== null);
+      const first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
+    }
+  });
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const name = form.elements.name, phone = form.elements.phone;
+    const nameOk = name.value.trim().length >= 2;
+    const phoneOk = phone.value.replace(/\D/g,'').length >= 10;
+    name.closest('.field').classList.toggle('invalid', !nameOk);
+    phone.closest('.field').classList.toggle('invalid', !phoneOk);
+    if (!nameOk) return name.focus();
+    if (!phoneOk) return phone.focus();
+    // TODO: тут надіслати дані на сервер / в CRM
+    form.reset();
+    modal.classList.add('done');
+  });
+  const phoneInput = form.elements.phone;
+  phoneInput.addEventListener('focus', () => { if (!phoneInput.value) phoneInput.value = '+380 '; });
+  phoneInput.addEventListener('blur', () => { if (phoneInput.value.trim() === '+380') phoneInput.value = ''; });
+  form.querySelectorAll('input').forEach(i => i.addEventListener('input', () => i.closest('.field').classList.remove('invalid')));
+</script>
+
+</body>
+</html>
